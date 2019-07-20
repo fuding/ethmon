@@ -11,6 +11,11 @@ This is a fork of [shkabo/ethmon](https://github.com/osnwt/ethmon) with my own a
 
 ![alt text](https://github.com/platofff/ethmon/raw/master/screenshot.png "screenshot")  
 
+## Installation from Docker
+```
+docker pull systemdplatoffd/ethmon
+docker run -p 3000:3000 -p 3001:3001 -v /host/path/to/config.json:/config/config.json platofff/ethmon
+```
 ## Installation
 * Install [nodejs 8+ and npm](http://nodejs.org) for your system (tested on MacOSX, Ubuntu and Windows)
 * Clone this repository or download and extract files
@@ -35,4 +40,5 @@ If you want to send me some digital gold:
 If you want to donate to the initial author of ethmon [@osnwt](https://github.com/osnwt), you can do it on :
 - BTC: removed by @osnwt as non-actual
 - ETH: removed by @osnwt as non-actual
+
 ¯\_(ツ)_/¯
