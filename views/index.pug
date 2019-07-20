@@ -1,0 +1,56 @@
+extends layout
+
+block content
+    // Row
+    .row
+      .col-md-12
+        // Miner info
+        #minerInfo
+            h2= title
+            .row
+                .col-md-12
+                    if (typeof(wallet) !== 'undefined' && typeof(explorer) !== 'undefined')
+                        p.pull-left Balance: 
+                            strong
+                                span#wallet-balance
+                            br
+                            
+                            | Difficulty: 
+                            span#difficulty
+                            br
+                            
+                            | Wallet: 
+                            a(href=explorer+'/addr/'+wallet, target="_blank").wallet #{wallet}
+                            br
+                            
+                            | Explorer: 
+                            a(href=explorer, target="_blank").explorer #{explorer}
+
+                    p.pull-right#warningmsg
+            .row
+                .col-md-12
+                    p.pull-left#minerSummary
+                    p.pull-right#lastUpdated
+            .table-responsive
+                table.table.table-hover
+                    thead
+                        th Name
+                        th Host
+                        th Uptime
+                        th ETH&nbsp;Stats
+                        
+                        if hashrates
+                            th GPU:Hashrate
+                        
+                        th Temp:Fan
+                        th Pools
+                        th Ver
+                        th Comments
+                    tbody
+        
+    if (typeof(wallet) !== 'undefined' && typeof(explorer) !== 'undefined')
+        center 
+            | Using CORS Anywhere proxy on 
+            a(href=cors_anywhere_host, target="_blank").cors_anywhere_host #{cors_anywhere_host}
+            br
+            | Ethmon v1.0.0

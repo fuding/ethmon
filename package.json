@@ -1,0 +1,20 @@
+{
+  "name": "ethmon",
+  "version": "1.0.0",
+  "author": "Oleg Semyonov (osnwt@github.com)",
+  "private": true,
+  "scripts": {
+    "start": "node ./www/www.js"
+  },
+  "dependencies": {
+    "cors-anywhere": "^0.4.1",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "log4js": "^0.6.37",
+    "moment": "^2.13.0",
+    "moment-duration-format": "^1.3.0",
+    "morgan": "^1.7.0",
+    "pug": "^2.0.4",
+    "serve-favicon": "^2.5.0"
+  }
+}
