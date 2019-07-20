@@ -9,6 +9,11 @@ Please notice that this sample will not work since contains comments not permitt
     // Optional: Enter your coin's explorer. ETC based explorers are supported (coins like PIRL, MOAC, etc.).
     // For Ethereum specify "https://etherscan.io"
     "explorer": "https://etherscan.io"
+    // Optional: Enter your Email for notifications
+    "notifications_email": "user@domain.com",
+    // Optional: Enter a domain which will be used for bot's Email. You can get free 3-level domains here: http://freedns.afraid.org/
+    // You can use any domain here but if it isn't your own your Email provider can ban the bot. 
+    "email_domain": "subdomain.domain.com",
     // Optional console log level (FATAL, ERROR, WARN, INFO, TRACE). Default is INFO
     "log_level": "WARN",
 

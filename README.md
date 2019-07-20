@@ -6,6 +6,7 @@ Ethminer: [https://github.com/ethereum-mining/ethminer](https://github.com/ether
 This is a fork of [shkabo/ethmon](https://github.com/osnwt/ethmon) with my own additions:
 - Coins with ETC-based explorers support
 - Network difficulty from explorer
+- Email notifications if some rig is offline or low hashrate
 - "Connect" button support for each rig. [Shellinabox](https://github.com/shellinabox/shellinabox) URL can be used for this button. If your rig is running Windows you can use "rdp://" hyperlink to start RDP session from the browser. [More info](https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-uri)
 - GPU numbering and other minor improvements
 

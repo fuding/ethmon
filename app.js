@@ -5,8 +5,10 @@ const express_logger = require('morgan');
 const pug = require('pug');
 const routes = require('./routes/index');
 const app = express();
+const sendmail = require('sendmail')();
 
 var miners = require('./routes/miners');
+var lastEmails = {"low_hashrate": 0, "rig_offline": 0};
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -77,6 +79,23 @@ const config = require('./config.json');
 const log4js = require('log4js');
 const logger = log4js.getLogger();
 logger.setLevel(config.log_level ? config.log_level : 'INFO');
+
+// Send warning function
+function warningSend(subject, html, warningType) {
+    var now = new Date();
+    if (config.notifications_email && now.getTime() - lastEmails[warningType] > 900000) { // Verify that the last email with this
+        sendmail({                                                                        // type was sent over 15 minutes ago
+            from: 'bot@' + config.email_domain,
+            to: config.notifications_email,
+            subject: subject,
+            html: html,
+        }, function(err, reply) {
+            console.log(err && err.stack);
+            console.dir(reply);
+        });
+        lastEmails[warningType] = now.getTime();
+    }
+}
 
 logger.warn('app: booting');
 
@@ -150,6 +169,7 @@ config.miners.forEach(function(item, i, arr) {
             "error"     : 'Error: no response',
             "last_seen" : c.last_seen ? c.last_seen : 'never'
         };
+        warningSend('Rig ' + m.name + ' is offline!', miners.json[i].error, 'rig_offline');
     })
 
     .on('data', function(data) {
@@ -161,7 +181,7 @@ config.miners.forEach(function(item, i, arr) {
 
         // Add connection button
         if (c.connect_url != undefined) {
-            var conn_url = '<br><a href=' + '"' + c.connect_url + '"' + 'target="_blank"><button>Connect</button></a>';             
+            var conn_url = '<br><a href=' + '"' + c.connect_url + '"' + 'target="_blank"><button>Connect</button></a>';
         } else {
             var conn_url = '';
         }
@@ -185,6 +205,7 @@ config.miners.forEach(function(item, i, arr) {
             if (miners.json[i].eth.split(';')[0] / 1000 < c.target_eth * (1 - config.tolerance / 100)) {
                 miners.json[i].warning = 'Low hashrate';
                 miners.json[i].last_good = c.last_good ? c.last_good : 'never';
+                warningSend('Low hashrate on rig ' + m.name + '!', 'Last good: ' + miners.json[i].last_good, 'low_hashrate');
             } else {
                 miners.json[i].warning = null;
                 c.last_good = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -215,6 +236,7 @@ config.miners.forEach(function(item, i, arr) {
             "error"      : e.name + ': ' + e.message,
             "last_seen"  : c.last_seen ? c.last_seen : 'never'
         };
+        warningSend('Rig ' + m.name + ' is offline!', miners.json[i].error, 'rig_offline');
     });
 
     function poll() {
