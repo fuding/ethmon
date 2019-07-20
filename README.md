@@ -14,7 +14,7 @@ This is a fork of [shkabo/ethmon](https://github.com/osnwt/ethmon) with my own a
 ## Installation from Docker
 ```
 docker pull systemdplatoffd/ethmon
-docker run -p 3000:3000 -p 3001:3001 -v /host/path/to/config.json:/config/config.json platofff/ethmon
+docker run -p 3000:3000 -p 3001:3001 -v /host/path/to/config.json:/config/config.json systemdplatoffd/ethmon
 ```
 ## Installation
 * Install [nodejs 8+ and npm](http://nodejs.org) for your system (tested on MacOSX, Ubuntu and Windows)
