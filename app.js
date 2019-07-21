@@ -8,7 +8,7 @@ const app = express();
 const sendmail = require('sendmail')();
 
 var miners = require('./routes/miners');
-var lastEmails = {"low_hashrate": 0, "rig_offline": 0};
+var sentEmails = {"low_hashrate": [], "rig_offline": []}; // Lists of rigs with problems
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,7 +24,7 @@ app.use(function(req, res, next) {
     req.json = {
         "cors_anywhere_host" : config.cors_anywhere_host,
         "wallet"             : config.wallet,
-	"explorer"           : config.explorer,
+	    "explorer"           : config.explorer,
         "title"              : config.title,
         "animation"          : config.animation,
         "header"             : config.header ? config.header : config.title,
@@ -80,11 +80,10 @@ const log4js = require('log4js');
 const logger = log4js.getLogger();
 logger.setLevel(config.log_level ? config.log_level : 'INFO');
 
-// Send warning function
-function warningSend(subject, html, warningType) {
-    var now = new Date();
-    if (config.notifications_email && now.getTime() - lastEmails[warningType] > 900000) { // Verify that the last email with this
-        sendmail({                                                                        // type was sent over 15 minutes ago
+// Send warning to Email function
+function warningSend(subject, html, rig, warningType) {
+    if (config.notifications_email && sentEmails[warningType].indexOf(rig) == -1) { 
+        sendmail({
             from: 'bot@' + config.email_domain,
             to: config.notifications_email,
             subject: subject,
@@ -93,7 +92,7 @@ function warningSend(subject, html, warningType) {
             console.log(err && err.stack);
             console.dir(reply);
         });
-        lastEmails[warningType] = now.getTime();
+        sentEmails[warningType].push(rig);
     }
 }
 
@@ -169,7 +168,7 @@ config.miners.forEach(function(item, i, arr) {
             "error"     : 'Error: no response',
             "last_seen" : c.last_seen ? c.last_seen : 'never'
         };
-        warningSend('Rig ' + m.name + ' is offline!', miners.json[i].error, 'rig_offline');
+        warningSend('Rig ' + m.name + ' is offline!', miners.json[i].error, i, 'rig_offline');
     })
 
     .on('data', function(data) {
@@ -200,15 +199,19 @@ config.miners.forEach(function(item, i, arr) {
             "ti"         : c.ti ? c.ti : null,
             "error"      : null
         };
-	m.socket.destroy();
+		m.socket.destroy();
+		var wIndex = sentEmails['rig_offiline'].indexOf(i);
+        if (wIndex != -1) { sentEmails['rig_offline'].splice(wIndex, wIndex); };
         if (c.target_eth && config.tolerance) {
             if (miners.json[i].eth.split(';')[0] / 1000 < c.target_eth * (1 - config.tolerance / 100)) {
                 miners.json[i].warning = 'Low hashrate';
                 miners.json[i].last_good = c.last_good ? c.last_good : 'never';
-                warningSend('Low hashrate on rig ' + m.name + '!', 'Last good: ' + miners.json[i].last_good, 'low_hashrate');
+                warningSend('Low hashrate on rig ' + i + '!', 'Last good: ' + miners.json[i].last_good, i, 'low_hashrate');
             } else {
                 miners.json[i].warning = null;
                 c.last_good = moment().format("YYYY-MM-DD HH:mm:ss");
+                var wIndex = sentEmails['low_hashrate'].indexOf(i);
+                if (wIndex != -1) { sentEmails['low_hashrate'].splice(wIndex, wIndex); };
             }
         }
     })
@@ -236,7 +239,7 @@ config.miners.forEach(function(item, i, arr) {
             "error"      : e.name + ': ' + e.message,
             "last_seen"  : c.last_seen ? c.last_seen : 'never'
         };
-        warningSend('Rig ' + m.name + ' is offline!', miners.json[i].error, 'rig_offline');
+        warningSend('Rig ' + m.name + ' is offline!', miners.json[i].error, i, 'rig_offline');
     });
 
     function poll() {
