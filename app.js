@@ -199,8 +199,8 @@ config.miners.forEach(function(item, i, arr) {
             "ti"         : c.ti ? c.ti : null,
             "error"      : null
         };
-		m.socket.destroy();
-		var wIndex = sentEmails['rig_offiline'].indexOf(i);
+	m.socket.destroy();
+	var wIndex = sentEmails['rig_offline'].indexOf(i);
         if (wIndex != -1) { sentEmails['rig_offline'].splice(wIndex, wIndex); };
         if (c.target_eth && config.tolerance) {
             if (miners.json[i].eth.split(';')[0] / 1000 < c.target_eth * (1 - config.tolerance / 100)) {
