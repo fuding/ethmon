@@ -39,17 +39,8 @@ if (config['cors_anywhere_server']) {
    let cors_proxy = require('cors-anywhere');
    let cors_anywhere_port = normalizePort(port + 1);
    let cors_proxy_server = cors_proxy.createServer({
-      originWhiteList: ['http://' + process.env.HOST, 'https://' + process.env.HOST] || function() {
-          let os = require('os');
-          let nInterfaces = os.networkInterfaces();
-          let addrs = [];
-          for (interface in nInterfaces) {
-              let addr = nInterfaces[interface][0]['address'];
-              addrs.push('http://' + addr, 'https://' + addr);
-          }
-          return addrs;
-      },
-      requireHeader: ['Origin', 'X-Requested-With'],
+      originWhiteList: [],
+      requireHeader: [],
       removeHeaders: ['cookie', 'cookie2'],
    });
    // listen on HTTP server port + 1. By default it's 3001
